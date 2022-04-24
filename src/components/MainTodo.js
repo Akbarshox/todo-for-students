@@ -3,11 +3,13 @@ import Button from '@mui/material/Button';
 import style from '../styles/todo.module.css';
 import Todos from "./Todos";
 import {Grid} from "@mui/material";
+import {useSnackbar} from "notistack";
 
 export default function MainTodo() {
    const [todos, setTodos] = useState([]); //initialState = boshlang'ich state
    const [inputValue, setInputValue] = useState('');
    const [edit, setEdit] = useState(null);
+   const { enqueueSnackbar } = useSnackbar();
 
    const handleChange = (e) => {
       setInputValue(e.target.value)
@@ -17,12 +19,14 @@ export default function MainTodo() {
       if (!inputValue) return; //agar input qiymat bolmasa hech narsa qilinmaydi
       setTodos(todos => [...todos, {title: inputValue}]);
       setInputValue(""); //submit dan kegin input ni tozalaydi
+      enqueueSnackbar('Todo is added', { variant: "success" });
    }
 
    const handleDelete = (index) => {
       const newTodos = [...todos];
       newTodos.splice(index, 1)
       setTodos(newTodos);
+      enqueueSnackbar('Todo is deleted', { variant: "error" });
    }
 
    const editTodo = (index) => {
@@ -41,6 +45,7 @@ export default function MainTodo() {
       setTodos(newTodos);
       setEdit(null);
       setInputValue('')
+      enqueueSnackbar('Todo is edited', { variant: "success" });
    }
 
    return (<div className={style.container}>
