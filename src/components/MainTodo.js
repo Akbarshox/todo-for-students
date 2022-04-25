@@ -1,15 +1,17 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import Button from '@mui/material/Button';
 import style from '../styles/todo.module.css';
 import Todos from "./Todos";
 import {Grid} from "@mui/material";
 import {useSnackbar} from "notistack";
+import {MockTodos} from "./MockTodos";
 
 export default function MainTodo() {
-   const [todos, setTodos] = useState([]); //initialState = boshlang'ich state
+   const [todos, setTodos] = useState(MockTodos); //initialState = boshlang'ich state
    const [inputValue, setInputValue] = useState('');
    const [edit, setEdit] = useState(null);
-   const { enqueueSnackbar } = useSnackbar();
+   const {enqueueSnackbar} = useSnackbar();
+   const inputRef = useRef();
 
    const handleChange = (e) => {
       setInputValue(e.target.value)
@@ -19,20 +21,21 @@ export default function MainTodo() {
       if (!inputValue) return; //agar input qiymat bolmasa hech narsa qilinmaydi
       setTodos(todos => [...todos, {title: inputValue}]);
       setInputValue(""); //submit dan kegin input ni tozalaydi
-      enqueueSnackbar('Todo is added', { variant: "success" });
+      enqueueSnackbar('Todo is added', {variant: "success"});
    }
 
    const handleDelete = (index) => {
       const newTodos = [...todos];
       newTodos.splice(index, 1)
       setTodos(newTodos);
-      enqueueSnackbar('Todo is deleted', { variant: "error" });
+      enqueueSnackbar('Todo is deleted', {variant: "error"});
    }
 
    const editTodo = (index) => {
       const todo = todos.find((el, i) => i === index)
       setEdit(Object.assign(todo, {index: index})); // bu yerda {title: ""} va index ni bitta obj ga solamiz
       setInputValue(todo.title);
+      inputRef.current.focus();
    }
 
    const submitEdit = () => {
@@ -45,12 +48,22 @@ export default function MainTodo() {
       setTodos(newTodos);
       setEdit(null);
       setInputValue('')
-      enqueueSnackbar('Todo is edited', { variant: "success" });
+      enqueueSnackbar('Todo is edited', {variant: "success"});
    }
 
-   return (<div className={style.container}>
+   const onKeyDown = (e) => {
+      if (e.key === "Enter")
+         if (edit) {
+            submitEdit();
+         } else {
+            addTodo();
+         }
+   }
+
+   return (
+      <div className={style.container}>
          <div className={style.inputs}>
-            <input type="text" onChange={handleChange} value={inputValue}/>
+            <input type="text" onChange={handleChange} value={inputValue} ref={inputRef} onKeyDown={onKeyDown}/>
             {!edit ? <Button variant="contained" onClick={addTodo}>Add</Button> :
                <Button variant="contained" onClick={submitEdit}>Edit</Button>}
          </div>
@@ -58,5 +71,6 @@ export default function MainTodo() {
             {todos.map((el, index) => <Todos index={index} handleDelete={handleDelete} editTodo={editTodo} {...el}/> // {...el} map qilingan har bitta elemntni jonatadi
             )}
          </Grid>
-      </div>)
+      </div>
+   )
 }
