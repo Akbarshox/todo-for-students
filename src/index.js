@@ -4,13 +4,20 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {SnackbarProvider, VariantType, useSnackbar} from 'notistack';
+import {createStore} from "redux";
+import {Provider} from "react-redux";
+import rootReducer from './store/reducers';
+
+const store = createStore(rootReducer)
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
    <React.StrictMode>
-      <SnackbarProvider maxSnack={3}>
-         <App/>
-      </SnackbarProvider>
+      <Provider store={store}>
+         <SnackbarProvider maxSnack={3}>
+            <App/>
+         </SnackbarProvider>
+      </Provider>
    </React.StrictMode>
 );
 

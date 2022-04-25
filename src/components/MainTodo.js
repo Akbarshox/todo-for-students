@@ -4,7 +4,9 @@ import style from '../styles/todo.module.css';
 import Todos from "./Todos";
 import {Grid} from "@mui/material";
 import {useSnackbar} from "notistack";
+import {addTodoRedux} from "../store/actions";
 import {MockTodos} from "./MockTodos";
+import {useDispatch} from "react-redux";
 
 export default function MainTodo() {
    const [todos, setTodos] = useState(MockTodos); //initialState = boshlang'ich state
@@ -12,6 +14,7 @@ export default function MainTodo() {
    const [edit, setEdit] = useState(null);
    const {enqueueSnackbar} = useSnackbar();
    const inputRef = useRef();
+   const dispatch = useDispatch();
 
    const handleChange = (e) => {
       setInputValue(e.target.value)
